@@ -17,8 +17,10 @@ The event will only fire when the element comes in to view of the viewport, and 
 The variable after the event argument indicates the visible state in the viewport.
 The third variable visiblePartX detects which horizontal part of the element is visible to the user (possible values: left, right, both)
 The fourth variable visiblePartY detects which vertical part of the element is visible to the user (possible values: top, bottom, both)
+The fifth variable visiblePercentWidth indicates the percentage visible width of the item 
+The sixth variable visiblePercentHeight indicates the percentage visible height of the item 
 
-bc.. $('div').bind('inview', function(event, isInView, visiblePartX, visiblePartY) {
+bc.. $('div').bind('inview', function(event, isInView, visiblePartX, visiblePartY, visiblePercentWidth, visiblePercentHeight) {
   if (isInView) {
     // element is now visible in the viewport
     if (visiblePartY == 'top') {
@@ -28,6 +30,7 @@ bc.. $('div').bind('inview', function(event, isInView, visiblePartX, visiblePart
     } else {
       // whole part of element is visible
     }
+    // console.log ('Visible height : '+visiblePercentHeight+'%');
   } else {
     // element has gone out of viewport
   }
