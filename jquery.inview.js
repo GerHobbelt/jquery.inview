@@ -103,12 +103,21 @@
     }
   }
 
+  var timeout;
+  function checkInViewDebounce(delay) {
+    clearTimeout(timeout);
+    timeout = setTimeout(function() {
+      timeout = null;
+      checkInView();
+    }, delay);
+  }
+
   $(w).bind("scroll resize", function() {
     viewportSize = viewportOffset = null;
-    checkInView();
+    checkInViewDebounce(50);
   });
 
   $(d).bind("inviewcheck", function() {
-    checkInView();
+    checkInViewDebounce(0);
   });
 })(jQuery);
