@@ -1,0 +1,9 @@
+{
+  "name": "jquery.inview",
+  "version": "1.0.0",
+  "main": "jquery.inview.js",
+
+  "dependencies": {
+    "jquery": ">=1.4"
+  }
+}
