@@ -7,15 +7,15 @@
 // UMD returnExports
 (function(root, factory) {
 
-  // AMD
-  if (typeof define === "function" && define.amd) {
-    define(["jquery"], factory);
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['jquery'], factory);
 
-  // Global
   } else {
+    // Browser globals
     factory(root.jQuery);
   }
-}(this, function($) {
+}(this, function ($) {
   'use strict';
 
 
