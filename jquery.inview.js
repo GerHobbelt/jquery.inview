@@ -3,9 +3,27 @@
  *    - based on the idea of Remy Sharp, http://remysharp.com/2009/01/26/element-in-view-event-plugin/
  *    - forked from http://github.com/zuk/jquery.inview/
  */
-(function ($) {
-  var inviewObjects = {}, viewportSize, viewportOffset,
-      d = document, w = window, documentElement = d.documentElement, expando = $.expando, timer;
+
+// UMD returnExports
+(function(root, factory) {
+
+  // AMD
+  if (typeof define === "function" && define.amd) {
+    define(["jquery"], factory);
+
+  // Global
+  } else {
+    factory(root.jQuery);
+  }
+}(this, function($) {
+
+  var timer, viewportSize, viewportOffset;
+  var d = document;
+  var expando = $.expando;
+  var inviewObjects = {};
+  var w = window;
+
+  var documentElement = d.documentElement;
 
   $.event.special.inview = {
     add: function(data) {
@@ -22,7 +40,10 @@
       // Don't waste cycles with an interval until we get at least one element that
       // has bound to the inview event.
       if (!timer && !$.isEmptyObject(inviewObjects)) {
-         timer = setInterval(checkInView, 250);
+        timer = setTimeout(function() {
+          timer = null;
+          checkInView();
+        }, 250);
       }
     },
 
@@ -88,7 +109,6 @@
         var $element      = $($elements[i]),
             elementSize   = { height: $element.height(), width: $element.width() },
             elementOffset = $element.offset(),
-            inView        = $element.data('inview'),
             visiblePartX,
             visiblePartY,
             visiblePartsMerged;
@@ -113,11 +133,7 @@
             'bottom' : (viewportOffset.top + viewportSize.height) < (elementOffset.top + elementSize.height) ?
             'top' : 'both');
           visiblePartsMerged = visiblePartX + "-" + visiblePartY;
-          if (!inView || inView !== visiblePartsMerged) {
-            $element.data('inview', visiblePartsMerged).trigger('inview', [true, visiblePartX, visiblePartY]);
-          }
-        } else if (inView) {
-          $element.data('inview', false).trigger('inview', [false]);
+          $element.trigger('inview', [true, visiblePartX, visiblePartY]);
         }
       }
     }
@@ -125,7 +141,15 @@
 
   $(w).bind("scroll resize scrollstop", function() {
     viewportSize = viewportOffset = null;
+    // Use setInterval in order to also make sure this captures elements within
+    // "overflow:scroll" elements or elements that appeared in the dom tree due to
+    // dom manipulation and reflow
+    // old: $(window).scroll(checkInView);  -->  checkInView();
   });
+
+  // By the way, iOS (iPad, iPhone, ...) seems to not execute, or at least delays
+  // intervals while the user scrolls. Therefore the inview event might fire a bit late there
+  // old: setInterval(checkInView, 250);
 
   // IE < 9 scrolls to focused elements without firing the "scroll" event
   if (!documentElement.addEventListener && documentElement.attachEvent) {
@@ -133,4 +157,6 @@
       viewportOffset = null;
     });
   }
-})(jQuery);
+
+  $.inviewCheck = checkInView;
+}));

@@ -1,7 +1,7 @@
 {
-  "name": "jquery.inview",
+  "name": "jquery-inview",
   "version": "1.0.0",
-  "description": "h1. Element 'inview' Event Plugin",
+  "description": "jQuery Inview",
   "main": "jquery.inview.js",
   "directories": {
     "example": "example",
