@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>jquery.inview - Example</title>
+  <meta name="viewport" content="initial-scale=1.0, width=device-width, height=device-height">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+  <script src="../jquery.inview.js"></script>
+  <style>
+    body {
+      font-family: Arial, Verdana, sans-serif;
+      font-size: 12px;
+    }
+	
+	.row
+	{
+		width:5000px;
+	}
+	
+	.square 
+	{
+		opacity:0;
+		width:500px;
+		height:500px;
+		float:left;
+	}
+    
+  </style>
+</head>
+<body>
+  <h1>jquery.inview - Example (Percentage)</h1>
+  <p>Scroll to show/hide elements depending on the visible percentage</a></p>
+
+  <div id="main"></div>
+
+  <script>
+  	$(document).ready(function () {
+		
+		// create div grid
+		for (var c1=0; c1<10; c1++)
+		{
+			var newRow=$('<div/>', { 'class':'row' } );
+			$('#main').append(newRow);
+			for (var c2=0; c2<10; c2++)
+			{
+				newRow.append( $('<div/>', { 'class':'square', 'style':'background-color:#'+Math.floor(Math.random()*16777215).toString(16) } ) );
+			}
+		}
+		
+		$('.square').bind('inview', function(event, isInView, visiblePartX, visiblePartY, visiblePercentWidth, visiblePercentHeight) 
+		{
+			if (isInView && visiblePercentWidth>50 && visiblePercentHeight>50 && !$(this).hasClass('show'))
+			{
+				$(this).stop().animate({ opacity: 1 });
+				$(this).addClass('show');
+			} else if ((!isInView || visiblePercentWidth<60 || visiblePercentHeight<60) && $(this).hasClass('show'))
+			{
+				$(this).stop().animate({ opacity: 0 });
+				$(this).removeClass('show');
+			}
+   		});
+		
+	});
+  
+    
+  </script>
+</body>
+</html>

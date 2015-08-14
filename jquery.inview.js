@@ -115,6 +115,10 @@
             elementOffset = $element.offset(),
             visiblePartX,
             visiblePartY,
+            visibleWidth,
+            visibleHeight,
+            visiblePercentWidth,
+            visiblePercentHeight,
             visiblePartsMerged;
 
         // Don't ask me why because I haven't figured out yet:
@@ -125,6 +129,8 @@
         if (!viewportOffset || !viewportSize) {
           return;
         }
+
+        // var inView = $element.data('inview');
 
         if (elementOffset.top + elementSize.height > viewportOffset.top &&
             elementOffset.top < viewportOffset.top + viewportSize.height &&
@@ -138,9 +144,31 @@
             'middle' : (viewportOffset.top > elementOffset.top) ?
 	        'bottom' : (viewportOffset.top + viewportSize.height) < (elementOffset.top + elementSize.height) ?
 	        'top' : 'both');
-          visiblePartsMerged = visiblePartX + "-" + visiblePartY;
-          $element.trigger('inview', [true, visiblePartX, visiblePartY]);
+          
+          //
+          // calculate intersection rectangle to know percentual width and height. 
+          // There's always intersection because the element is inside the viewport
+          var x0 = Math.max(viewportOffset.left, elementOffset.left);
+          var x1 = Math.min(viewportOffset.left + viewportSize.width, elementOffset.left + elementSize.width);
+          var y0 = Math.max(viewportOffset.top, elementOffset.top);
+          var y1 = Math.min(viewportOffset.top + viewportSize.height, elementOffset.top + elementSize.height);
+          
+          // complete intersect rectangle will be: {'left':x0,'top':y0,'width':x1 - x0,'height':y1 - y0};
+          visibleWidth  = x1 - x0;
+          visibleHeight = y1 - y0;
+
+          visiblePercentWidth  = Math.round(visibleWidth*100/elementSize.width);
+          visiblePercentHeight = Math.round(visibleHeight*100/elementSize.height);
+
+          visiblePartsMerged = visiblePartX + "-" + visiblePartY + "-" + visiblePercentWidth + "-" + visiblePercentHeight;
+          // if (!inView || inView !== visiblePartsMerged) {
+          // $element.data('inview', visiblePartsMerged).
+          $element.trigger('inview', [true, visiblePartX, visiblePartY, visiblePercentWidth, visiblePercentHeight]);
+          // }
         }
+        // } else if (inView) {
+        //  $element.data('inview', false).trigger('inview', [false]);
+        //}
       }
     }
   }

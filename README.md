@@ -65,22 +65,26 @@ will automatically trigger the kick for you; thus, sending the event to your
 bound element.
 
 The variable after the event argument indicates the visible state in the
-viewport. The third variable (topOrBottomOrBoth) detects which part of viewport
-is visible to the user.
+viewport. 
+The third variable visiblePartX detects which horizontal part of the element is visible to the user (possible values: left, right, middle, both).
+The fourth variable visiblePartY detects which vertical part of the element is visible to the user (possible values: top, bottom, middle, both).
+The fourth variable visiblePercentWidth indicates the percentage visible width of the item. 
+The fifth variable visiblePercentHeight indicates the percentage visible height of the item. 
 
 ```js
-$('div').bind('inview', function (event, visible, topOrBottomOrBoth) {
+$('div').bind('inview', function (event, visible, visiblePartX, visiblePartY, visiblePercentWidth, visiblePercentHeight) {
   if (visible) {
     // element is now visible in the viewport
-    if (topOrBottomOrBoth == 'top') {
+    if (visiblePartY == 'top') {
       // top part of element is visible
-    } else if (topOrBottomOrBoth == 'bottom') {
+    } else if (visiblePartY == 'bottom') {
       // bottom part of element is visible
-	} else if (topOrBottomOrBoth == 'middle) {
+	} else if (visiblePartY == 'middle) {
 	  // element is larger than the viewport, top and bottom are offscreen, but middle is visible
     } else {
       // whole part of element is visible
     }
+    // console.log ('Visible height : ' + visiblePercentHeight + '%');
   } else {
     // element has gone out of viewport
   }
@@ -128,11 +132,11 @@ in the browser's viewport.
 ## More complex example
 
 This way we can attach inView to some DIV in our code to, for example, detect
-when it FULLY readed by user (user sees it's bottom and top) and only after 1
+when it FULLY read by user (user sees its bottom and top) and only after 1
 seconds of view, so after we call some out stats function or whatever:
 
 ```js
-$(someMyOneDiv).bind('inview', function(e, v, t) {
+$(someMyOneDiv).bind('inview', function(e, isInView, visiblePartX, visiblePartY) {
   var o = $(this);
 
   if(o.data('inviewtimer')) {
@@ -140,18 +144,18 @@ $(someMyOneDiv).bind('inview', function(e, v, t) {
     o.removeData('inviewtimer');
   }
 
-  if(v) {
+  if (isInView) {
     o.data('inviewtimer', setTimeout(function() {
-      if(t == 'top') {
+      if (visiblePartY == 'top') {
         o.data('seenTop', true);
-      } else if(t == 'bottom') {
+      } else if (visiblePartY == 'bottom') {
         o.data('seenBottom', true);
       } else {
         o.data('seenTop', true);
         o.data('seenBottom', true);
       }
 
-      if(o.data('seenTop') && o.data('seenBottom')) {
+      if (o.data('seenTop') && o.data('seenBottom')) {
         o.unbind('inview');
         // here we will do WHAT WHE NEED (for ex. Call Ajax stats collector)
         // ...
@@ -161,8 +165,8 @@ $(someMyOneDiv).bind('inview', function(e, v, t) {
 });
 ```
 
-Maybe there's a way to do this more elegant. And someone needed to test this on
-IE6-7-8 (they're nasty).
+> Maybe there's a way to do this more elegant. And someone needed to test this on
+> IE6-7-8 (they're nasty).
 
 
 ## How it works
