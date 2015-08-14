@@ -27,9 +27,16 @@
 
   var documentElement = d.documentElement;
 
+  // https://learn.jquery.com/events/event-extensions/
   $.event.special.inview = {
     add: function(data) {
-      inviewObjects[data.guid + "-" + this[expando]] = { data: data, $element: $(this) };
+      var hash = data.guid + "-" + this[expando];
+      // multiple elements may register the same event at the same time: track ALL the elements:
+      if (!inviewObjects[hash]) {
+        inviewObjects[hash] = { data: data, $element: [$(this)] };
+      } else {
+        inviewObjects[hash].$element.push($(this));
+      }
 
       // Use setInterval in order to also make sure this captures elements within
       // "overflow:scroll" elements or elements that appeared in the dom tree due to
@@ -96,7 +103,9 @@
     $.each(inviewObjects, function(i, inviewObject) {
       var selector  = inviewObject.data.selector,
           $element  = inviewObject.$element;
-      $elements.push(selector ? $element.find(selector) : $element);
+      $.each($element, function(el_idx, $el) {
+        $elements.push(selector ? $el.find(selector) : $el);
+      });
     });
 
     elementsLength = $elements.length;
@@ -137,13 +146,13 @@
             elementOffset.left + elementSize.width > viewportOffset.left &&
             elementOffset.left < viewportOffset.left + viewportSize.width) {
           visiblePartX = ((viewportOffset.left > elementOffset.left) && ((viewportOffset.left + viewportSize.width) < (elementOffset.left + elementSize.width)) ?
-		    'middle' : viewportOffset.left > elementOffset.left ?
+            'middle' : viewportOffset.left > elementOffset.left ?
             'right' : (viewportOffset.left + viewportSize.width) < (elementOffset.left + elementSize.width) ?
             'left' : 'both');
-	      visiblePartY = ( (viewportOffset.top > elementOffset.top && ((viewportOffset.top + viewportSize.height) < (elementOffset.top + elementSize.height))) ? 
+          visiblePartY = ( (viewportOffset.top > elementOffset.top && ((viewportOffset.top + viewportSize.height) < (elementOffset.top + elementSize.height))) ? 
             'middle' : (viewportOffset.top > elementOffset.top) ?
-	        'bottom' : (viewportOffset.top + viewportSize.height) < (elementOffset.top + elementSize.height) ?
-	        'top' : 'both');
+            'bottom' : (viewportOffset.top + viewportSize.height) < (elementOffset.top + elementSize.height) ?
+            'top' : 'both');
           
           //
           // calculate intersection rectangle to know percentual width and height. 
@@ -153,14 +162,14 @@
           var y0 = Math.max(viewportOffset.top, elementOffset.top);
           var y1 = Math.min(viewportOffset.top + viewportSize.height, elementOffset.top + elementSize.height);
           
-          // complete intersect rectangle will be: {'left':x0,'top':y0,'width':x1 - x0,'height':y1 - y0};
+          // complete intersect rectangle will be: {'left':x0, 'top':y0, 'width':x1 - x0, 'height':y1 - y0};
           visibleWidth  = x1 - x0;
           visibleHeight = y1 - y0;
 
-          visiblePercentWidth  = Math.round(visibleWidth*100/elementSize.width);
-          visiblePercentHeight = Math.round(visibleHeight*100/elementSize.height);
+          visiblePercentWidth  = Math.round(visibleWidth * 100 / elementSize.width);
+          visiblePercentHeight = Math.round(visibleHeight * 100 / elementSize.height);
 
-          visiblePartsMerged = visiblePartX + "-" + visiblePartY + "-" + visiblePercentWidth + "-" + visiblePercentHeight;
+          visiblePartsMerged = visiblePartX + '-' + visiblePartY + '-' + visiblePercentWidth + '-' + visiblePercentHeight;
           // if (!inView || inView !== visiblePartsMerged) {
           // $element.data('inview', visiblePartsMerged).
           $element.trigger('inview', [true, visiblePartX, visiblePartY, visiblePercentWidth, visiblePercentHeight]);
