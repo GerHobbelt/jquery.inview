@@ -1,7 +1,7 @@
 /**
  * author Christopher Blum
  *    - based on the idea of Remy Sharp, http://remysharp.com/2009/01/26/element-in-view-event-plugin/
- *    - forked from http://github.com/zuk/jquery.inview/
+ *    - forked from https://github.com/zuk/jquery.inview/
  */
 
 // UMD returnExports
@@ -16,6 +16,8 @@
     factory(root.jQuery);
   }
 }(this, function($) {
+  'use strict';
+
 
   var timer, viewportSize, viewportOffset;
   var d = document;
@@ -48,12 +50,14 @@
     },
 
     remove: function(data) {
-      try { delete inviewObjects[data.guid + "-" + this[expando]]; } catch(e) {}
+      try { 
+        delete inviewObjects[data.guid + "-" + this[expando]]; 
+      } catch(e) {}
 
       // Clear interval when we no longer have any elements listening
       if ($.isEmptyObject(inviewObjects)) {
-         clearInterval(timer);
-         timer = null;
+        clearInterval(timer);
+        timer = null;
       }
     }
   };
@@ -100,7 +104,7 @@
       viewportSize   = getViewportSize();
       viewportOffset = getViewportOffset();
 
-      for (; i<elementsLength; i++) {
+      for (; i < elementsLength; i++) {
         // Ignore elements that are not in the DOM tree
         if (!$.contains(documentElement, $elements[i][0])) {
           continue;
@@ -139,13 +143,37 @@
     }
   }
 
-  $(w).bind("scroll resize scrollstop", function() {
+  function createFunctionLimitedToOneExecutionPerDelay(fn, delay) {
+    var shouldRun = false;
+    var timer = null;
+
+    function runOncePerDelay() {
+        if (timer !== null) {
+            shouldRun = true;
+            return;
+        }
+        shouldRun = false;
+        fn();
+        timer = setTimeout(function() {
+            timer = null;
+            if (shouldRun) {
+                runOncePerDelay();
+            }
+        }, delay);
+    }
+
+    return runOncePerDelay;
+  }
+
+  var runner = createFunctionLimitedToOneExecutionPerDelay(function() {
     viewportSize = viewportOffset = null;
     // Use setInterval in order to also make sure this captures elements within
     // "overflow:scroll" elements or elements that appeared in the dom tree due to
     // dom manipulation and reflow
-    // old: $(window).scroll(checkInView);  -->  checkInView();
-  });
+    // old: $(window).scroll(checkInView);  -->  
+    checkInView();
+  }, 100);
+  $(w).on('checkInView.inview click.inview ready.inview scroll.inview resize.inview scrollstop.inview ', runner);
 
   // By the way, iOS (iPad, iPhone, ...) seems to not execute, or at least delays
   // intervals while the user scrolls. Therefore the inview event might fire a bit late there
