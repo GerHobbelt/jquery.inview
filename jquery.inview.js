@@ -130,12 +130,14 @@
             elementOffset.top < viewportOffset.top + viewportSize.height &&
             elementOffset.left + elementSize.width > viewportOffset.left &&
             elementOffset.left < viewportOffset.left + viewportSize.width) {
-          visiblePartX = (viewportOffset.left > elementOffset.left ?
+          visiblePartX = ((viewportOffset.left > elementOffset.left) && ((viewportOffset.left + viewportSize.width) < (elementOffset.left + elementSize.width)) ?
+		    'middle' : viewportOffset.left > elementOffset.left ?
             'right' : (viewportOffset.left + viewportSize.width) < (elementOffset.left + elementSize.width) ?
             'left' : 'both');
-          visiblePartY = (viewportOffset.top > elementOffset.top ?
-            'bottom' : (viewportOffset.top + viewportSize.height) < (elementOffset.top + elementSize.height) ?
-            'top' : 'both');
+	      visiblePartY = ( (viewportOffset.top > elementOffset.top && ((viewportOffset.top + viewportSize.height) < (elementOffset.top + elementSize.height))) ? 
+            'middle' : (viewportOffset.top > elementOffset.top) ?
+	        'bottom' : (viewportOffset.top + viewportSize.height) < (elementOffset.top + elementSize.height) ?
+	        'top' : 'both');
           visiblePartsMerged = visiblePartX + "-" + visiblePartY;
           $element.trigger('inview', [true, visiblePartX, visiblePartY]);
         }

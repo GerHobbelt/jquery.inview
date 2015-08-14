@@ -70,12 +70,14 @@ is visible to the user.
 
 ```js
 $('div').bind('inview', function (event, visible, topOrBottomOrBoth) {
-  if (visible == true) {
+  if (visible) {
     // element is now visible in the viewport
     if (topOrBottomOrBoth == 'top') {
       // top part of element is visible
     } else if (topOrBottomOrBoth == 'bottom') {
       // bottom part of element is visible
+	} else if (topOrBottomOrBoth == 'middle) {
+	  // element is larger than the viewport, top and bottom are offscreen, but middle is visible
     } else {
       // whole part of element is visible
     }
