@@ -43,9 +43,9 @@ http://jsbin.com/ugupa: (to edit: http://jsbin.com/ugupa/edit)
 
 ## Download
 
-[Download jQuery inview event plugin][]
+[Download the original jQuery inview event plugin][]
 
-Or from github at: http://github.com/zuk/jquery.inview
+Or the revised version from github at: [Ger Hobbelt's fork of the `inview` event plugin][]
 
 
 ## Usage
@@ -240,6 +240,6 @@ better chance it will complete before the user even sees it.
 [lazyload plugin]: http://www.appelsiini.net/projects/lazyload
 [Dustin Diaz's]: http://www.dustindiaz.com/
 [detect when an element scrolls in to view code]: http://www.dustindiaz.com/element-scroll-into-view/
-[Download jQuery inview event plugin]: http://remysharp.com/downloads/jquery.inview.js
+[Download the original jQuery inview event plugin]: http://remysharp.com/downloads/jquery.inview.js
 [$.support]: http://api.jquery.com/?support
-
+[Ger Hobbelt's fork of the `inview` event plugin]: https://github.com/GerHobbelt/jquery.inview
