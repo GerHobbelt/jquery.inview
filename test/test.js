@@ -1,8 +1,10 @@
 QUnit.config.reorder = false;
 
-window['jQuery 1.6'].each(['jQuery 1.4', 'jQuery 1.5', 'jQuery 1.6', 'jQuery 1.7', 'jQuery 1.8'], function(i, version) {
+window['jQuery 2.1.4'].each(['jQuery 1.4', 'jQuery 1.5', 'jQuery 1.6', 'jQuery 1.7', 'jQuery 1.8', 'jQuery 1.9', 'jQuery 2.1.4'], function(i, version) {
   var jQuery  = window[version],
       $       = jQuery;
+
+  //$.inviewReinitialize($);
 
   module('jquery.inview - ' + version, {
     setup: function() {
@@ -46,7 +48,9 @@ window['jQuery 1.6'].each(['jQuery 1.4', 'jQuery 1.5', 'jQuery 1.6', 'jQuery 1.7
 
     element.css({ left: 0, top: this.size - 50 + 'px' });
     element.appendTo('body');
-    element.bind('inview.firstCall', function() { firstCall = true; });
+    element.bind('inview.firstCall', function() {
+      firstCall = true;
+    });
 
     setTimeout(function() {
       $(window).scrollTop(0).scrollLeft(0);
@@ -60,7 +64,6 @@ window['jQuery 1.6'].each(['jQuery 1.4', 'jQuery 1.5', 'jQuery 1.6', 'jQuery 1.7
       $(window).scrollTop(9999999);
 
       setTimeout(function() {
-
         ok(secondCall, 'Triggered handler after element appeared in viewport');
         ok(inView, 'Parameter, indicating whether the element is in the viewport, is set to "true"');
         element.unbind('inview.secondCall');
@@ -140,7 +143,9 @@ window['jQuery 1.6'].each(['jQuery 1.4', 'jQuery 1.5', 'jQuery 1.6', 'jQuery 1.7
     element
       .css({ left: '-500px', top: 0 })
       .appendTo('body')
-      .bind('inview', function(event) { calls++; });
+      .bind('inview', function(event) { 
+        calls++; 
+      });
 
     setTimeout(function() {
 
@@ -294,25 +299,27 @@ window['jQuery 1.6'].each(['jQuery 1.4', 'jQuery 1.5', 'jQuery 1.6', 'jQuery 1.7
   
 
 
-  asyncTest('Check "live" events', function() {
-    expect(3);
-    
-    var that = this,
-        elems = $("body .test-container > div.test-element");
-    elems.live("inview", function(event) {
-      elems.die("inview");
-      ok(true, "Live event correctly fired");
-      equal(event.currentTarget, that.element[0], "event.currentTarget correctly set");
-      equal(this, that.element[0], "Handler bound to target element");
-      start();
+  // jQuery.live() is not supported after jQuery 1.8:
+  if (version <= 'jQuery 1.8') {
+    asyncTest('Check "live" events', function() {
+      expect(3);
+      
+      var that = this,
+          elems = $("body .test-container > div.test-element");
+      elems.live("inview", function(event) {
+        elems.die("inview");
+        ok(true, "Live event correctly fired");
+        equal(event.currentTarget, that.element[0], "event.currentTarget correctly set");
+        equal(this, that.element[0], "Handler bound to target element");
+        start();
+      });
+
+      this.element.css({
+        top: '0',
+        left: '0'
+      }).appendTo(this.container);
     });
-
-    this.element.css({
-      top: '0',
-      left: '0'
-    }).appendTo(this.container);
-  });
-
+  }
 
   asyncTest('Check "delegate" events', function() {
     expect(3);
