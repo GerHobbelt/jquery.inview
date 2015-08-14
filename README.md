@@ -233,7 +233,7 @@ better chance it will complete before the user even sees it.
 * Mobile WebKit on Palm Pre 1
 
 
-## References
+
 
 [jQuery for Designers]: http://jqueryfordesigners.com/
 [.net magazine]: http://www.netmag.co.uk/
